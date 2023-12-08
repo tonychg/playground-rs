@@ -16,7 +16,7 @@ pub struct SaveMemoryRepository {
 }
 
 impl SaveMemoryRepository {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             items: HashMap::new(),
         }

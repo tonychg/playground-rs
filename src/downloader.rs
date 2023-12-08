@@ -13,7 +13,7 @@ pub struct FakeDownloader {
 }
 
 impl FakeDownloader {
-    fn new(directory: &str) -> Self {
+    pub fn new(directory: &str) -> Self {
         Self {
             directory: directory.to_string(),
         }

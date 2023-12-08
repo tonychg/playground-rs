@@ -16,7 +16,7 @@ pub struct DocumentMemoryRepository {
 }
 
 impl DocumentMemoryRepository {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             items: HashMap::new(),
         }
