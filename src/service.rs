@@ -70,7 +70,7 @@ impl DocumentService for DocumentServiceFactory {
             return Err("Document not found".into());
         }
         let document = document.unwrap();
-        for storage in self.storages.iter() {
+        for storage in self.storages.iter_mut() {
             if !storage.exists(&document)? {
                 let save = storage.upload(&document)?;
                 self.save_repository.save(&save)?;
@@ -167,6 +167,7 @@ mod tests {
         let document_downloaded = document_service
             .download("https://example.com/existing")
             .unwrap();
+        let _ = document_service.store(&document_downloaded.id());
         let save = document_service.store(&document_downloaded.id());
         assert_eq!(save.unwrap_err().to_string(), "Document already stored");
     }
