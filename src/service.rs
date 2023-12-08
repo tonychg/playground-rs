@@ -8,21 +8,21 @@ use crate::{
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-pub trait DocumentService {
+pub trait BackupService {
     fn get_document_by_id(&self, document_id: &str) -> Result<Option<Document>>;
     fn get_document_by_url(&self, url: &str) -> Result<Option<Document>>;
     fn download(&mut self, url: &str) -> Result<Document>;
     fn store(&mut self, document_id: &str) -> Result<Save>;
 }
 
-pub struct DocumentServiceFactory {
+pub struct BackupServiceFactory {
     document_repository: Box<dyn DocumentRepository>,
     save_repository: Box<dyn SaveRepository>,
     downloaders: Vec<Box<dyn Downloader>>,
     storages: Vec<Box<dyn Storage>>,
 }
 
-impl DocumentServiceFactory {
+impl BackupServiceFactory {
     pub fn new(
         document_repository: Box<dyn DocumentRepository>,
         save_repository: Box<dyn SaveRepository>,
@@ -38,7 +38,7 @@ impl DocumentServiceFactory {
     }
 }
 
-impl DocumentService for DocumentServiceFactory {
+impl BackupService for BackupServiceFactory {
     fn get_document_by_id(&self, document_id: &str) -> Result<Option<Document>> {
         Ok(self.document_repository.find(document_id)?)
     }
@@ -93,16 +93,16 @@ mod tests {
 
     use super::*;
 
-    fn create_fake_document_service() -> DocumentServiceFactory {
+    fn create_fake_document_service() -> BackupServiceFactory {
         let document_repository = Box::new(DocumentMemoryRepository::new());
         let save_repository = Box::new(SaveMemoryRepository::new());
         let downloaders: Vec<Box<dyn Downloader>> = vec![Box::new(FakeDownloader::new("/tmp"))];
         let storages: Vec<Box<dyn Storage>> = vec![Box::new(FakeStorage::new("/tmp"))];
-        DocumentServiceFactory::new(document_repository, save_repository, downloaders, storages)
+        BackupServiceFactory::new(document_repository, save_repository, downloaders, storages)
     }
 
     #[test]
-    fn test_document_service_download_with_valid_url() {
+    fn test_backup_service_download_with_valid_url() {
         let mut document_service = create_fake_document_service();
         let document_downloaded = document_service.download("https://example.com").unwrap();
         let document = document_service
@@ -117,14 +117,14 @@ mod tests {
     }
 
     #[test]
-    fn test_document_service_download_with_invalid_url() {
+    fn test_backup_service_download_with_invalid_url() {
         let mut document_service = create_fake_document_service();
         let document_downloaded = document_service.download("https://example.org");
         assert!(document_downloaded.is_err());
     }
 
     #[test]
-    fn test_document_service_download_with_already_existing_document() {
+    fn test_backup_service_download_with_already_existing_document() {
         let mut document_service = create_fake_document_service();
         document_service.download("https://example.com").unwrap();
         let document_downloaded = document_service.download("https://example.com");
@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn test_document_service_get_document_by_url_with_valid_document() {
+    fn test_backup_service_get_document_by_url_with_valid_document() {
         let mut document_service = create_fake_document_service();
         let document_downloaded = document_service.download("https://example.com").unwrap();
         let document = document_service
@@ -147,7 +147,7 @@ mod tests {
     }
 
     #[test]
-    fn test_document_service_store_with_valid_document() {
+    fn test_backup_service_store_with_valid_document() {
         let mut document_service = create_fake_document_service();
         let document_downloaded = document_service.download("https://example.com").unwrap();
         let save = document_service.store(&document_downloaded.id()).unwrap();
@@ -155,14 +155,14 @@ mod tests {
     }
 
     #[test]
-    fn test_document_service_store_with_invalid_document() {
+    fn test_backup_service_store_with_invalid_document() {
         let mut document_service = create_fake_document_service();
         let save = document_service.store("invalid_document_id");
         assert_eq!(save.unwrap_err().to_string(), "Document not found");
     }
 
     #[test]
-    fn test_document_service_store_with_already_stored_document() {
+    fn test_backup_service_store_with_already_stored_document() {
         let mut document_service = create_fake_document_service();
         let document_downloaded = document_service
             .download("https://example.com/existing")
