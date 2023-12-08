@@ -85,11 +85,9 @@ impl BackupService for BackupServiceFactory {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        downloader::FakeDownloader,
-        repository::{document::DocumentMemoryRepository, save::SaveMemoryRepository},
-        storage::FakeStorage,
-    };
+    use crate::downloader::FakeDownloader;
+    use crate::repository::{document::DocumentMemoryRepository, save::SaveMemoryRepository};
+    use crate::storage::FakeStorage;
 
     use super::*;
 
