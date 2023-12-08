@@ -5,8 +5,8 @@ use crate::document::Document;
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub trait DocumentRepository {
-    fn find(&self, id: &str) -> Result<Document>;
-    fn find_by_url(&self, url: &str) -> Result<Document>;
+    fn find(&self, id: &str) -> Result<Option<Document>>;
+    fn find_by_url(&self, url: &str) -> Result<Option<Document>>;
     fn save(&mut self, item: &Document) -> Result<()>;
     fn delete(&mut self, id: &str) -> Result<()>;
 }
@@ -24,20 +24,20 @@ impl DocumentMemoryRepository {
 }
 
 impl DocumentRepository for DocumentMemoryRepository {
-    fn find(&self, id: &str) -> Result<Document> {
+    fn find(&self, id: &str) -> Result<Option<Document>> {
         match self.items.get(id) {
-            Some(document) => Ok(document.clone()),
-            None => Err("Not found".into()),
+            Some(document) => Ok(Some(document.clone())),
+            None => Ok(None),
         }
     }
 
-    fn find_by_url(&self, url: &str) -> Result<Document> {
+    fn find_by_url(&self, url: &str) -> Result<Option<Document>> {
         for (_, document) in &self.items {
             if document.url() == url {
-                return Ok(document.clone());
+                return Ok(Some(document.clone()));
             }
         }
-        Err("Not found".into())
+        Ok(None)
     }
 
     fn save(&mut self, item: &Document) -> Result<()> {
@@ -61,7 +61,7 @@ mod tests {
     fn test_repository_find_with_not_existing_document() {
         let repository = DocumentMemoryRepository::new();
         let document = Document::new("http://example.com");
-        assert_eq!(repository.find(&document.id()).is_err(), true);
+        assert_eq!(repository.find(&document.id()).unwrap().is_none(), true);
     }
 
     #[test]
@@ -69,7 +69,7 @@ mod tests {
         let mut repository = DocumentMemoryRepository::new();
         let document = Document::new("http://example.com");
         repository.save(&document).unwrap();
-        assert_eq!(repository.find(&document.id()).is_ok(), true);
+        assert_eq!(repository.find(&document.id()).unwrap().is_some(), true);
     }
 
     #[test]
@@ -77,7 +77,10 @@ mod tests {
         let mut repository = DocumentMemoryRepository::new();
         let document = Document::new("http://example.com");
         repository.save(&document).unwrap();
-        assert_eq!(repository.find_by_url(&document.url()).is_ok(), true);
+        assert_eq!(
+            repository.find_by_url(&document.url()).unwrap().is_some(),
+            true
+        );
     }
 
     #[test]
@@ -85,7 +88,7 @@ mod tests {
         let mut repository = DocumentMemoryRepository::new();
         let document = Document::new("http://example.com");
         repository.save(&document).unwrap();
-        assert_eq!(repository.find(&document.id()).is_ok(), true);
+        assert_eq!(repository.find(&document.id()).unwrap().is_some(), true);
     }
 
     #[test]
@@ -94,6 +97,6 @@ mod tests {
         let document = Document::new("http://example.com");
         repository.save(&document).unwrap();
         repository.delete(&document.id()).unwrap();
-        assert_eq!(repository.find(&document.id()).is_err(), true);
+        assert_eq!(repository.find(&document.id()).unwrap().is_none(), true);
     }
 }

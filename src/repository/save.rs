@@ -5,7 +5,7 @@ use crate::save::Save;
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub trait SaveRepository {
-    fn find(&self, id: &str) -> Result<Save>;
+    fn find(&self, id: &str) -> Result<Option<Save>>;
     fn find_document_id(&self, url: &str) -> Result<Vec<Save>>;
     fn save(&mut self, item: &Save) -> Result<()>;
     fn delete(&mut self, id: &str) -> Result<()>;
@@ -24,10 +24,10 @@ impl SaveMemoryRepository {
 }
 
 impl SaveRepository for SaveMemoryRepository {
-    fn find(&self, id: &str) -> Result<Save> {
+    fn find(&self, id: &str) -> Result<Option<Save>> {
         match self.items.get(id) {
-            Some(Save) => Ok(Save.clone()),
-            None => Err("Not found".into()),
+            Some(save) => Ok(Some(save.clone())),
+            None => Ok(None),
         }
     }
 
@@ -62,7 +62,7 @@ mod tests {
     fn test_repository_find_with_not_existing_save() {
         let repository = SaveMemoryRepository::new();
         let save = Save::new("test");
-        assert_eq!(repository.find(&save.id()).is_err(), true);
+        assert_eq!(repository.find(&save.id()).unwrap().is_none(), true);
     }
 
     #[test]
@@ -70,7 +70,7 @@ mod tests {
         let mut repository = SaveMemoryRepository::new();
         let save = Save::new("test");
         repository.save(&save).unwrap();
-        assert_eq!(repository.find(&save.id()).is_ok(), true);
+        assert_eq!(repository.find(&save.id()).unwrap().is_some(), true);
     }
 
     #[test]
@@ -78,7 +78,7 @@ mod tests {
         let mut repository = SaveMemoryRepository::new();
         let save = Save::new("test");
         repository.save(&save).unwrap();
-        assert_eq!(repository.find(&save.id()).is_ok(), true);
+        assert_eq!(repository.find(&save.id()).unwrap().is_some(), true);
     }
 
     #[test]
@@ -87,6 +87,6 @@ mod tests {
         let save = Save::new("test");
         repository.save(&save).unwrap();
         repository.delete(&save.id()).unwrap();
-        assert_eq!(repository.find(&save.id()).is_err(), true);
+        assert_eq!(repository.find(&save.id()).unwrap().is_none(), true);
     }
 }
