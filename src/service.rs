@@ -15,8 +15,8 @@ mod tests {
     }
 
     impl Downloader for MockDownloader {
-        fn is_available(&self, _document: &Document) -> Result<bool> {
-            Ok(true)
+        fn is_available(&self, document: &Document) -> Result<bool> {
+            Ok(document.url().starts_with("https://example.com"))
         }
 
         fn get_filename(&self, document: &Document) -> Result<Document> {
@@ -64,6 +64,13 @@ mod tests {
             save.set_url(format!("{}/{}", self.directory, save.id()));
             Ok(save)
         }
+    }
+
+    #[test]
+    fn test_downloader_is_available_with_valid_document() {
+        let downloader = MockDownloader::new("/tmp");
+        let document = Document::new("https://example.com");
+        assert_eq!(downloader.is_available(&document).unwrap(), true);
     }
 
     #[test]
