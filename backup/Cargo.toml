@@ -1,14 +1,10 @@
 [package]
-name = "playground-rs"
+name = "backup"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-backup = { path = "backup", version = "0.1.0" }
-
-[workspace]
-members = [
-  "backup"
-]
+ulid = "1.1.0"
+chrono = "0.4.31"
