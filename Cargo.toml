@@ -7,10 +7,16 @@ edition = "2021"
 
 [dependencies]
 backup = { path = "backup", version = "0.1.0" }
-item-system= { path = "item-system", version = "0.1.0" }
+item-system = { path = "item-system", version = "0.1.0" }
+dispatch-errors = { path = "dispatch-errors", version = "0.1.0" }
+thiserror = "1.0.56"
+zip = "0.6.6"
+walkdir = "2.4.0"
+tempfile = "3.9.0"
 
 [workspace]
 members = [
   "backup",
-  "item-system"
+  "item-system",
+  "dispatch-errors"
 ]
