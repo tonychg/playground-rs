@@ -7,8 +7,10 @@ edition = "2021"
 
 [dependencies]
 backup = { path = "backup", version = "0.1.0" }
+item-system= { path = "item-system", version = "0.1.0" }
 
 [workspace]
 members = [
-  "backup"
+  "backup",
+  "item-system"
 ]

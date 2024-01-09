@@ -2,6 +2,11 @@
 version: "3"
 
 tasks:
+  init:project:
+    vars:
+      PROJECT_NAME: "{{.CLI_ARGS}}"
+    cmds:
+      - cargo init --lib {{.PROJECT_NAME}}
   build:
     cmds:
       - nix build .

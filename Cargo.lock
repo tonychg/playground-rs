@@ -107,6 +107,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "item-system"
+version = "0.1.0"
+dependencies = [
+ "ulid",
+]
+
+[[package]]
 name = "js-sys"
 version = "0.3.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -147,6 +154,7 @@ name = "playground-rs"
 version = "0.1.0"
 dependencies = [
  "backup",
+ "item-system",
 ]
 
 [[package]]
