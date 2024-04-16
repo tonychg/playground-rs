@@ -85,8 +85,6 @@
             rust-analyzer
             git
             go-task
-            sops
-            age
             dive
             pkg-config
             openssl
