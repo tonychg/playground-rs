@@ -1,12 +1,16 @@
 [workspace]
 members = [
   "crates/generic-type",
+  "crates/item-system",
 ]
 resolver = "2"
 
 [workspace.dependencies]
 thiserror = "1.0.56"
+anyhow = "1.0.82"
 zip = "0.6.6"
 walkdir = "2.4.0"
 tempfile = "3.9.0"
 uuid = { version = "1.8.0", features = ["fast-rng", "v4", "serde"] }
+
+generic-type = { path = "./crates/generic-type" }
