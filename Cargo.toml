@@ -1,5 +1,7 @@
 [workspace]
-members = []
+members = [
+  "crates/generic-type",
+]
 resolver = "2"
 
 [workspace.dependencies]
@@ -7,3 +9,4 @@ thiserror = "1.0.56"
 zip = "0.6.6"
 walkdir = "2.4.0"
 tempfile = "3.9.0"
+uuid = { version = "1.8.0", features = ["fast-rng", "v4", "serde"] }
