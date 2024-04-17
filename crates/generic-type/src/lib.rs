@@ -35,8 +35,18 @@ impl AsRef<str> for Id {
 }
 
 #[test]
+fn arc_str_as_ref() {
+    assert_eq!("123", Id::new("123").as_ref());
+}
+
+#[test]
 fn arc_str_equals_str() {
     assert_eq!("123", Id::new("123"));
+}
+
+#[test]
+fn arc_str_not_equals_str() {
+    assert_ne!("321", Id::new("123"));
 }
 
 #[test]
@@ -45,7 +55,20 @@ fn arc_str_equals_string() {
 }
 
 #[test]
+fn arc_str_not_equals_string() {
+    assert_ne!("321".to_string(), Id::new("123".to_string()));
+}
+
+#[test]
 fn arc_str_equals_uuid() {
     let uuid = uuid::Uuid::new_v4();
     assert_eq!(uuid.to_string(), Id::new(uuid));
+}
+
+#[test]
+fn arc_str_not_equals_uuid() {
+    assert_ne!(
+        uuid::Uuid::new_v4().to_string(),
+        Id::new(uuid::Uuid::new_v4())
+    );
 }
