@@ -1,4 +1,4 @@
-use super::{Category, Item, ItemId};
+use super::{Attribute, Category, Item, ItemId, Modifier};
 use generic_type::Id;
 
 use anyhow::{bail, Result};
@@ -53,10 +53,12 @@ impl Inventory {
         } else if item.base.category != Category::Equipment {
             bail!(InventoryError::RuneNotApplicable);
         } else {
-            item.durability = min(
-                item.base.base_durability,
-                item.durability + item.base.attributes.recharge_durability,
-            );
+            for attribute in rune.base.attributes.iter() {
+                if attribute.modifier == Modifier::RechargeDurability {
+                    item.durability =
+                        min(item.base.base_durability, item.durability + attribute.value);
+                }
+            }
             self.remove(rune_id);
             self.update(item);
             Ok(())
@@ -109,6 +111,24 @@ impl Inventory {
             .values()
             .filter(|item| &item.base.category == category)
             .count()
+    }
+
+    pub fn modifier_total(&self, modifier: &Modifier) -> Option<Attribute> {
+        let attributes: Vec<&Attribute> = self
+            .items
+            .values()
+            .flat_map(|item| item.base.attributes.iter())
+            .filter(|attribute| &attribute.modifier == modifier)
+            .collect();
+        if attributes.is_empty() {
+            None
+        } else {
+            Some(
+                attributes
+                    .into_iter()
+                    .fold(Attribute::default(), |acc, x| acc + x.clone()),
+            )
+        }
     }
 
     pub fn has_item(&self, item_id: &ItemId) -> bool {

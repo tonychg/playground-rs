@@ -1,5 +1,6 @@
+use super::{Attribute, Modifier};
 use generic_type::Id;
-use std::{ops, sync::Arc};
+use std::sync::Arc;
 
 pub type ItemBaseId = Id;
 pub type Durability = u32;
@@ -11,31 +12,6 @@ pub enum Category {
     Rune,
 }
 
-#[derive(Default, Clone, Debug)]
-pub struct Attributes {
-    pub increase_token_amount: f64,
-    pub increase_item_drop_rate: f64,
-    pub reduce_mission_duration: f64,
-    pub unlock_expert_mission: bool,
-    pub equipment_slot: usize,
-    pub recharge_durability: u32,
-}
-
-impl ops::Add<Attributes> for Attributes {
-    type Output = Attributes;
-
-    fn add(self, rhs: Attributes) -> Self::Output {
-        let mut result = self;
-        result.increase_token_amount += rhs.increase_token_amount;
-        result.increase_item_drop_rate += rhs.increase_item_drop_rate;
-        result.reduce_mission_duration += rhs.reduce_mission_duration;
-        result.unlock_expert_mission |= rhs.unlock_expert_mission;
-        result.equipment_slot += rhs.equipment_slot;
-        result.recharge_durability += rhs.recharge_durability;
-        result
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct ItemBase {
     pub id: ItemBaseId,
@@ -43,7 +19,7 @@ pub struct ItemBase {
     pub description: Option<Arc<str>>,
     pub image_url: Option<Arc<str>>,
     pub category: Category,
-    pub attributes: Arc<Attributes>,
+    pub attributes: Arc<[Attribute]>,
     pub base_durability: Durability,
 }
 
@@ -59,7 +35,7 @@ pub struct ItemBaseBuilder {
     description: Option<Arc<str>>,
     image_url: Option<Arc<str>>,
     category: Category,
-    attributes: Attributes,
+    attributes: Vec<Attribute>,
     base_durability: Durability,
 }
 
@@ -71,7 +47,7 @@ impl ItemBaseBuilder {
             description: None,
             image_url: None,
             category,
-            attributes: Attributes::default(),
+            attributes: Vec::new(),
             base_durability: 0,
         }
     }
@@ -91,8 +67,12 @@ impl ItemBaseBuilder {
         self
     }
 
-    pub fn attributes(mut self, attributes: Attributes) -> Self {
-        self.attributes = attributes;
+    pub fn attribute(mut self, modifier: &Modifier, value: u32, decimals: Option<u32>) -> Self {
+        self.attributes.push(Attribute {
+            modifier: modifier.clone(),
+            value,
+            decimals: decimals.unwrap_or(0),
+        });
         self
     }
 
