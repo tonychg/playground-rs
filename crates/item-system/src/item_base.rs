@@ -25,7 +25,7 @@ impl ops::Add<Attributes> for Attributes {
     type Output = Attributes;
 
     fn add(self, rhs: Attributes) -> Self::Output {
-        let mut result = self.clone();
+        let mut result = self;
         result.increase_token_amount += rhs.increase_token_amount;
         result.increase_item_drop_rate += rhs.increase_item_drop_rate;
         result.reduce_mission_duration += rhs.reduce_mission_duration;

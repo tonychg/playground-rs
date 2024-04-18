@@ -124,6 +124,6 @@ impl Inventory {
         if item.is_locked {
             bail!(InventoryError::ItemIsLocked(item_id.clone()))
         }
-        Ok(item.clone())
+        Ok(item)
     }
 }
