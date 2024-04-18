@@ -1,3 +1,4 @@
+use std::fmt::{self, Display, Formatter};
 use std::string::ToString;
 use std::sync::Arc;
 
@@ -10,6 +11,12 @@ impl Id {
     }
 }
 
+impl Display for Id {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 impl PartialEq<Id> for &str {
     fn eq(&self, other: &Id) -> bool {
         self == &other.0.as_ref()
@@ -19,12 +26,6 @@ impl PartialEq<Id> for &str {
 impl PartialEq<Id> for String {
     fn eq(&self, other: &Id) -> bool {
         self == other.0.as_ref()
-    }
-}
-
-impl ToString for Id {
-    fn to_string(&self) -> String {
-        self.0.to_string()
     }
 }
 
