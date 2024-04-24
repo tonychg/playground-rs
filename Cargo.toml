@@ -2,6 +2,7 @@
 members = [
   "crates/generic-type",
   "crates/item-system",
+  "crates/builder",
 ]
 resolver = "2"
 
